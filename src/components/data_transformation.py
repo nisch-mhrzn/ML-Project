@@ -10,16 +10,16 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from src.exception import CustomException
 from src.logger import logging
-
+from src.utils import save_object
 
 @dataclass
 class DataTranformationConfig:
     preprocessor_obj_file_path = os.path.join("artifacts", "preprocessor.pkl")
 
 
-class DataTranformation:
+class DataTransformation:
     def __init__(self):
-        self.data_tranformation_config = DataTranformationConfig()
+        self.data_transformation_config = DataTranformationConfig()
 
     def get_data_transformer_object(self):
         """This function is responsible for data transformation"""
@@ -38,14 +38,14 @@ class DataTranformation:
                         "imputer",
                         SimpleImputer(strategy="median"),
                     ),  # handles missing values
-                    ("scaler", StandardScaler()),
+                    ("scaler", StandardScaler(with_mean=False)),
                 ]
             )
             cat_pipeline = Pipeline(
                 steps=[
                     ("imputer", SimpleImputer(strategy="most_frequent")),
                     ("onehot", OneHotEncoder()),
-                    ("scaler", StandardScaler()),
+                    ("scaler", StandardScaler(with_mean=False)),
                 ]
             )
             logging.info(f"Categorical columns:{categorical_columns}")
@@ -109,4 +109,4 @@ class DataTranformation:
                 self.data_transformation_config.preprocessor_obj_file_path,
             )
         except Exception as e:
-            raise CustomException(e,sys)
+            raise CustomException(e,sys) 
